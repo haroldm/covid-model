@@ -17,7 +17,7 @@ def get_raw_covidtracking_data():
     # 
     # We use daily data sorted by 'départements' (finest level available).
     url_by_dep = "https://www.data.gouv.fr/fr/datasets/r/406c6a23-e283-4300-9484-54e78c8ae675"
-    data = pd.read_csv(url_by_dep, sep=";")
+    data = pd.read_csv(url_by_dep, sep=";", dtype={"dep": str})
     return data
 
 
