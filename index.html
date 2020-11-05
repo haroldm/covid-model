@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+    .axis text {
+      font: 10px sans-serif;
+    }
+    
+    .axis line,
+    .axis path {
+      fill: none;
+      stroke: #000;
+      shape-rendering: crispEdges;
+    }
+</style>
+<body>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <script>
+        var request = new XMLHttpRequest();
+        request.open('GET', "results.json");
+        request.responseType = 'text'; // now we're getting a string!
+        request.send();
+
+        request.onload = function() {
+            var results = JSON.parse(request.response); 
+
+            var index = results['index'];
+            elem = index[0]
+            date = elem.split("Timestamp('")[1].split(" ")[0];
+            date = Date.parse(date)
+            dep = elem.split("'")[1]
+
+            data = results['data']
+            elem = data[0]
+            r0 = elem[1]
+            r0_l80 = elem[2];
+            r0_h80 = elem[3];
+
+            date_min = Number.MAX_SAFE_INTEGER;
+            date_max = 0;
+            r0_min = Number.MAX_SAFE_INTEGER;
+            r0_max = 0;
+            r0_array = [];
+            for (var i=0; i<index.length; i++) {
+                index_elem = index[i];
+                dep = index_elem.split("'")[1]
+                if (dep != "66") {
+                    break;
+                }
+                date = index_elem.split("Timestamp('")[1].split(" ")[0];
+                date = Date.parse(date)
+                if (date < date_min) {
+                    date_min = date;
+                }
+                if (date > date_max) {
+                    date_max = date;
+                }
+
+                data_elem = data[i];
+                r0 = data_elem[1];
+                if (r0 < r0_min) {
+                    r0_min = r0;
+                }
+                if (r0 > r0_max) {
+                    r0_max = r0;
+                }
+                r0_array.push([date, r0]);
+            }
+
+            var width = 1000,
+                height = 500;
+
+            // Append SVG 
+            var svg = d3.select("body")
+                .append("svg")
+                .attr("width", width)
+                .attr("height", height);
+
+            // Create scales
+            var x_scale = d3.scaleTime()
+                .domain([date_min, date_max])
+                .range([0, width - 50]);
+            var y_scale = d3.scaleLinear()
+                .domain([r0_max*1.05, r0_min*0.95])
+                .range([0, height - 50]);
+            
+            // Add scales to axes
+            var x_axis = d3.axisBottom()
+                .scale(x_scale);
+            var y_axis = d3.axisLeft()
+                .scale(y_scale)
+
+            //Append group and insert axis
+            svg.append("g")
+                .attr("transform", "translate(50, 450)")
+                .call(x_axis);
+            // var xAxisTranslate = height/2 + 10;
+            svg.append("g")
+                .attr("transform", "translate(50, 0)")
+                .call(y_axis);
+
+            // Create Rt line
+            var line = d3.line()
+                .curve(d3.curveMonotoneX)
+                .x((p) => x_scale(p[0]))
+                .y((p) => y_scale(p[1]));
+            svg.append("path")
+                .attr("d", line(r0_array))
+                .attr("fill", "none") 
+                .attr("stroke", "green")
+                .attr("transform", "translate(50, 0)");
+
+            // Create horizontal line at 1
+            svg.append("line")
+                .attr("x1", x_scale(r0_array[0][0]))
+                .attr("y1", y_scale(1))
+                .attr("x2", x_scale(r0_array[r0_array.length-1][0]))
+                .attr("y2", y_scale(1))
+                .attr("stroke", "#DDD")
+                .attr("stroke-width", 1)
+                .attr("transform", "translate(50, 0)");
+
+        }
+    </script>
+</body>
