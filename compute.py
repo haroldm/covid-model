@@ -36,9 +36,9 @@ class NoDaemonProcess(multiprocessing.Process):
 class MyPool(multiprocessing.pool.Pool):
     Process = NoDaemonProcess
 
-
 def process_data(data):
     (dep, model_data) = data
+    print("Computing model for " + dep)
     gm = GenerativeModel(dep, model_data)
     gm.sample()
 
@@ -55,6 +55,10 @@ df = get_and_process_covidtracking_data(run_date=pd.Timestamp.today()-pd.Timedel
 deps = set([])
 for (dep, date) in df.index.values:
     deps.add(dep)
+
+# Sort deps
+deps = list(deps)
+deps.sort()
 
 # Split `df` by deps
 df_by_deps = []

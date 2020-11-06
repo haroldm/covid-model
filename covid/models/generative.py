@@ -218,6 +218,7 @@ class GenerativeModel:
                 target_accept=target_accept,
                 tune=tune,
                 init=init,
+                progressbar=False,
             )
 
         return self

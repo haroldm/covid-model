@@ -161,12 +161,13 @@
             r0_array = [];
             for (var i=0; i<index.length; i++) {
                 index_elem = index[i];
-                dep = index_elem.split("'")[1]
+                dep = index_elem[0];
                 if (dep != selected_dep) {
                     continue;
                 }
-                date = index_elem.split("Timestamp('")[1].split(" ")[0];
-                date = Date.parse(date)
+                // date = index_elem.split("Timestamp('")[1].split(" ")[0];
+                // date = Date.parse(date)
+                date = index_elem[1];
                 if (date < date_min) {
                     date_min = date;
                 }
