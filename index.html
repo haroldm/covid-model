@@ -13,28 +13,147 @@
     }
 </style>
 <body>
+    <p>
+        <select name="deps" id="deps" onchange="graph_dep()"></select>
+        <div id="chart"></div>
+    </p>
+
     <script src="https://d3js.org/d3.v6.min.js"></script>
     <script>
-        var request = new XMLHttpRequest();
-        request.open('GET', "results.json");
-        request.responseType = 'text'; // now we're getting a string!
-        request.send();
 
-        request.onload = function() {
-            var results = JSON.parse(request.response); 
+        var depFr = [];
+        depFr.push(["01", "Ain"]);
+        depFr.push(["02", "Aisne"]);
+        depFr.push(["03", "Allier"]);
+        depFr.push(["04", "Alpes-de-Haute-Provence"]);
+        depFr.push(["05", "Hautes-Alpes"]);
+        depFr.push(["06", "Alpes-Maritimes"]);
+        depFr.push(["07", "Ardèche"]);
+        depFr.push(["08", "Ardennes"]);
+        depFr.push(["09", "Ariège"]);
+        depFr.push(["10", "Aube"]);
+        depFr.push(["11", "Aude"]);
+        depFr.push(["12", "Aveyron"]);
+        depFr.push(["13", "Bouches-du-Rhône"]);
+        depFr.push(["14", "Calvados"]);
+        depFr.push(["15", "Cantal"]);
+        depFr.push(["16", "Charente"]);
+        depFr.push(["17", "Charente-Maritime"]);
+        depFr.push(["18", "Cher"]);
+        depFr.push(["19", "Corrèze"]);
+        depFr.push(["21", "Côte-d'Or"]);
+        depFr.push(["22", "Côtes-d'Armor"]);
+        depFr.push(["23", "Creuse"]);
+        depFr.push(["24", "Dordogne"]);
+        depFr.push(["25", "Doubs"]);
+        depFr.push(["26", "Drôme"]);
+        depFr.push(["27", "Eure"]);
+        depFr.push(["28", "Eure-et-Loir"]);
+        depFr.push(["29", "Finistère"]);
+        depFr.push(["30", "Gard"]);
+        depFr.push(["31", "Haute-Garonne"]);
+        depFr.push(["32", "Gers"]);
+        depFr.push(["33", "Gironde"]);
+        depFr.push(["34", "Hérault"]);
+        depFr.push(["35", "Ille-et-Vilaine"]);
+        depFr.push(["36", "Indre"]);
+        depFr.push(["37", "Indre-et-Loire"]);
+        depFr.push(["38", "Isère"]);
+        depFr.push(["39", "Jura"]);
+        depFr.push(["40", "Landes"]);
+        depFr.push(["41", "Loir-et-Cher"]);
+        depFr.push(["42", "Loire"]);
+        depFr.push(["43", "Haute-Loire"]);
+        depFr.push(["44", "Loire-Atlantique"]);
+        depFr.push(["45", "Loiret"]);
+        depFr.push(["46", "Lot"]);
+        depFr.push(["47", "Lot-et-Garonne"]);
+        depFr.push(["48", "Lozère"]);
+        depFr.push(["49", "Maine-et-Loire"]);
+        depFr.push(["50", "Manche"]);
+        depFr.push(["51", "Marne"]);
+        depFr.push(["52", "Haute-Marne"]);
+        depFr.push(["53", "Mayenne"]);
+        depFr.push(["54", "Meurthe-et-Moselle"]);
+        depFr.push(["55", "Meuse"]);
+        depFr.push(["56", "Morbihan"]);
+        depFr.push(["57", "Moselle"]);
+        depFr.push(["58", "Nièvre"]);
+        depFr.push(["59", "Nord"]);
+        depFr.push(["60", "Oise"]);
+        depFr.push(["61", "Orne"]);
+        depFr.push(["62", "Pas-de-Calais"]);
+        depFr.push(["63", "Puy-de-Dôme"]);
+        depFr.push(["64", "Pyrénées-Atlantiques"]);
+        depFr.push(["65", "Hautes-Pyrénées"]);
+        depFr.push(["66", "Pyrénées-Orientales"]);
+        depFr.push(["67", "Bas-Rhin"]);
+        depFr.push(["68", "Haut-Rhin"]);
+        depFr.push(["69", "Rhône"]);
+        depFr.push(["70", "Haute-Saône"]);
+        depFr.push(["71", "Saône-et-Loire"]);
+        depFr.push(["72", "Sarthe"]);
+        depFr.push(["73", "Savoie"]);
+        depFr.push(["74", "Haute-Savoie"]);
+        depFr.push(["75", "Paris"]);
+        depFr.push(["76", "Seine-Maritime"]);
+        depFr.push(["77", "Seine-et-Marne"]);
+        depFr.push(["78", "Yvelines"]);
+        depFr.push(["79", "Deux-Sèvres"]);
+        depFr.push(["80", "Somme"]);
+        depFr.push(["81", "Tarn"]);
+        depFr.push(["82", "Tarn-et-Garonne"]);
+        depFr.push(["83", "Var"]);
+        depFr.push(["84", "Vaucluse"]);
+        depFr.push(["85", "Vendée"]);
+        depFr.push(["86", "Vienne"]);
+        depFr.push(["87", "Haute-Vienne"]);
+        depFr.push(["88", "Vosges"]);
+        depFr.push(["89", "Yonne"]);
+        depFr.push(["90", "Territoire de Belfort"]);
+        depFr.push(["91", "Essonne"]);
+        depFr.push(["92", "Hauts-de-Seine"]);
+        depFr.push(["93", "Seine-Saint-Denis"]);
+        depFr.push(["94", "Val-de-Marne"]);
+        depFr.push(["95", "Val-d'Oise"]);
+        depFr.push(["971", "Guadeloupe"]);
+        depFr.push(["972", "Martinique"]);
+        depFr.push(["973", "Guyane"]);
+        depFr.push(["974", "La Réunion"]);
+        depFr.push(["976", "Mayotte"]);
+        depFr.push(["2A", "Corse-du-Sud"]);
+        depFr.push(["2B", "Haute-Corse"]);
 
+
+        var sel = document.getElementById("deps");
+        depFr.forEach(elem => {
+            key = elem[0];
+            value = elem[1];
+            var opt = document.createElement("option");
+            opt.value = key;
+            opt.text = key + " - " + value;
+            sel.add(opt, null);
+        });
+
+        function graph_dep() {
+            dep = document.getElementById("deps").value;
+            var width = 1000,
+            height = 500;
+
+            document.getElementsByTagName("svg")[0].remove();
+
+            var svg = d3.select("#chart")
+                .append("svg")
+                .attr("width", width)
+                .attr("height", height);
+            
+            graph(svg, dep, results);
+        }
+
+        function graph(svg, selected_dep, results) {
             var index = results['index'];
-            elem = index[0]
-            date = elem.split("Timestamp('")[1].split(" ")[0];
-            date = Date.parse(date)
-            dep = elem.split("'")[1]
-
             data = results['data']
-            elem = data[0]
-            r0 = elem[1]
-            r0_l80 = elem[2];
-            r0_h80 = elem[3];
-
+            
             date_min = Number.MAX_SAFE_INTEGER;
             date_max = 0;
             r0_min = Number.MAX_SAFE_INTEGER;
@@ -43,8 +162,8 @@
             for (var i=0; i<index.length; i++) {
                 index_elem = index[i];
                 dep = index_elem.split("'")[1]
-                if (dep != "66") {
-                    break;
+                if (dep != selected_dep) {
+                    continue;
                 }
                 date = index_elem.split("Timestamp('")[1].split(" ")[0];
                 date = Date.parse(date)
@@ -57,23 +176,16 @@
 
                 data_elem = data[i];
                 r0 = data_elem[1];
-                if (r0 < r0_min) {
-                    r0_min = r0;
+                r0_l80 = data_elem[2];
+                r0_h80 = data_elem[3];
+                if (r0_l80 < r0_min) {
+                    r0_min = r0_l80;
                 }
-                if (r0 > r0_max) {
-                    r0_max = r0;
+                if (r0_h80 > r0_max) {
+                    r0_max = r0_h80;
                 }
-                r0_array.push([date, r0]);
+                r0_array.push([date, r0, r0_l80, r0_h80]);
             }
-
-            var width = 1000,
-                height = 500;
-
-            // Append SVG 
-            var svg = d3.select("body")
-                .append("svg")
-                .attr("width", width)
-                .attr("height", height);
 
             // Create scales
             var x_scale = d3.scaleTime()
@@ -106,7 +218,27 @@
             svg.append("path")
                 .attr("d", line(r0_array))
                 .attr("fill", "none") 
-                .attr("stroke", "green")
+                .attr("stroke", "#000")
+                .attr("transform", "translate(50, 0)");
+
+            // Create low and high percentiles lines
+            var l_80_line = d3.line()
+                .curve(d3.curveMonotoneX)
+                .x((p) => x_scale(p[0]))
+                .y((p) => y_scale(p[2]));
+            svg.append("path")
+                .attr("d", l_80_line(r0_array))
+                .attr("fill", "none") 
+                .attr("stroke", "#888")
+                .attr("transform", "translate(50, 0)");
+            var h_80_line = d3.line()
+                .curve(d3.curveMonotoneX)
+                .x((p) => x_scale(p[0]))
+                .y((p) => y_scale(p[3]));
+            svg.append("path")
+                .attr("d", h_80_line(r0_array))
+                .attr("fill", "none") 
+                .attr("stroke", "#888")
                 .attr("transform", "translate(50, 0)");
 
             // Create horizontal line at 1
@@ -120,5 +252,24 @@
                 .attr("transform", "translate(50, 0)");
 
         }
+        var request = new XMLHttpRequest();
+        request.open('GET', "results.json");
+        request.responseType = 'text';
+        request.send();
+
+        var width = 1000,
+            height = 500;
+
+        var svg = d3.select("#chart")
+            .append("svg")
+            .attr("width", width)
+            .attr("height", height);
+        
+        var results = Object;
+        request.onload = function() {
+            results = JSON.parse(request.response);
+        };
+        
+        
     </script>
 </body>
